@@ -22,8 +22,8 @@ export const VERTEX_FORMAT = [
     { name: "a_pos", size: 2 },
     { name: "a_uv", size: 2 },
     { name: "a_color", size: 4 },
-		// Me
-		{ name: "a_custom", size: 4 },
+    // Me
+    { name: "a_custom", size: 4 },
 ];
 const STRIDE = VERTEX_FORMAT.reduce((sum, f) => sum + f.size, 0);
 const MAX_BATCHED_QUAD = 2048;
