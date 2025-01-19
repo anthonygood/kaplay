@@ -22,6 +22,8 @@ export const VERTEX_FORMAT = [
     { name: "a_pos", size: 2 },
     { name: "a_uv", size: 2 },
     { name: "a_color", size: 4 },
+		// Me
+		{ name: "a_custom", size: 4 },
 ];
 const STRIDE = VERTEX_FORMAT.reduce((sum, f) => sum + f.size, 0);
 const MAX_BATCHED_QUAD = 2048;
@@ -32,10 +34,14 @@ export const VERT_TEMPLATE = `
 attribute vec2 a_pos;
 attribute vec2 a_uv;
 attribute vec4 a_color;
+// Me
+attribute vec4 a_custom;
+
 
 varying vec2 v_pos;
 varying vec2 v_uv;
 varying vec4 v_color;
+varying vec4 v_custom;
 
 vec4 def_vert() {
 	return vec4(a_pos, 0.0, 1.0);
@@ -48,6 +54,7 @@ void main() {
 	v_pos = a_pos;
 	v_uv = a_uv;
 	v_color = a_color;
+	v_custom = a_custom;
 	gl_Position = pos;
 }
 `;
@@ -58,6 +65,8 @@ precision mediump float;
 varying vec2 v_pos;
 varying vec2 v_uv;
 varying vec4 v_color;
+// Me again
+varying vec4 v_custom;
 
 uniform sampler2D u_tex;
 

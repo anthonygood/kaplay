@@ -4359,6 +4359,8 @@ export interface Vertex {
     uv: Vec2;
     color: Color;
     opacity: number;
+    customA?: Vec2;
+    customB?: Vec2;
 }
 
 /**
@@ -4380,6 +4382,8 @@ export interface RenderProps {
     shader?: string | ShaderData | Asset<ShaderData> | null;
     uniform?: Uniform | null;
     outline?: Outline;
+    customA?: Vec2;
+    customB?: Vec2;
 }
 
 export type DrawTextureOpt = RenderProps & {

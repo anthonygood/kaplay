@@ -39,6 +39,10 @@ export function drawRaw(
             v.color.g / 255,
             v.color.b / 255,
             v.opacity,
+            v.customA?.x ?? 0,
+            v.customA?.y ?? 0,
+            v.customB?.x ?? 0,
+            v.customB?.y ?? 0,
         );
     }
 
