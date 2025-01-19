@@ -55,6 +55,8 @@ export function drawUVQuad(opt: DrawUVQuadOpt) {
                 ),
                 color: color,
                 opacity: opacity,
+                customA: opt.customA,
+                customB: opt.customB,
             },
             {
                 pos: new Vec2(-w / 2, -h / 2),
@@ -64,6 +66,8 @@ export function drawUVQuad(opt: DrawUVQuadOpt) {
                 ),
                 color: color,
                 opacity: opacity,
+                customA: opt.customA,
+                customB: opt.customB,
             },
             {
                 pos: new Vec2(w / 2, -h / 2),
@@ -73,6 +77,8 @@ export function drawUVQuad(opt: DrawUVQuadOpt) {
                 ),
                 color: color,
                 opacity: opacity,
+                customA: opt.customA,
+                customB: opt.customB,
             },
             {
                 pos: new Vec2(w / 2, h / 2),
@@ -82,6 +88,8 @@ export function drawUVQuad(opt: DrawUVQuadOpt) {
                 ),
                 color: color,
                 opacity: opacity,
+                customA: opt.customA,
+                customB: opt.customB,
             },
         ],
         [0, 1, 3, 1, 2, 3],

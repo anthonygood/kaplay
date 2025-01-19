@@ -41,6 +41,8 @@ export function drawPolygon(opt: DrawPolygonOpt) {
                 ? (opt.colors[i] ? opt.colors[i].mult(color) : color)
                 : color,
             opacity: opt.opacity ?? 1,
+            customA: opt.customA,
+            customB: opt.customB,
         }));
 
         let indices;
