@@ -9,18 +9,23 @@
     "url": "git+https://github.com/kaplayjs/kaplay.git"
   },
   "type": "module",
-  "main": "./dist/kaplay.cjs",
-  "module": "./dist/kaplay.mjs",
+  "_main": "./dist/kaplay.cjs",
+  "_module": "./dist/kaplay.mjs",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
   "types": "./dist/declaration/index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./dist/declaration/index.d.ts",
-        "default": "./dist/kaplay.mjs"
+        "_default": "./dist/kaplay.mjs",
+        "default": "./src/index.ts"
+
       },
       "require": {
         "types": "./dist/declaration/index.d.ts",
-        "default": "./dist/kaplay.cjs"
+        "_default": "./dist/kaplay.cjs",
+        "default": "./src/index.ts"
       }
     },
     "./global": "./dist/declaration/global.js"
@@ -46,7 +51,8 @@
   "scripts": {
     "dev": "NODE_ENV=development node scripts/dev.js",
     "win:dev": "set NODE_ENV=development && node scripts/dev.js",
-    "build": "npm run dts && node scripts/build.js && npm run merge-dts",
+    "build": "echo nobuild",
+    "_build": "npm run dts && node scripts/build.js && npm run merge-dts",
     "check": "tsc",
     "fmt": "dprint fmt",
     "test": "node scripts/test.js",
