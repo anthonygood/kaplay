@@ -1,4 +1,10 @@
-// @ts-check
+/**
+ * @file Drag
+ * @description How to make game objects draggable.
+ * @difficulty 0
+ * @tags ui
+ * @minver 3001.0
+ */
 
 // Drag & drop interaction
 
@@ -49,7 +55,8 @@ onMousePress(() => {
     if (curDraggin) {
         return;
     }
-    // Loop all "bean"s in reverse, so we pick the topmost one
+
+    // Loop all "bean"s in reverse, so we pick the one that is on top
     for (const obj of get("drag").reverse()) {
         // If mouse is pressed and mouse position is inside, we pick
         if (obj.isHovering()) {

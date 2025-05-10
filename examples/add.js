@@ -1,4 +1,10 @@
-// @ts-check
+/**
+ * @file Add game objects
+ * @description How to create game objects.
+ * @difficulty 0
+ * @tags basics, gobj
+ * @minver 3001.0
+ */
 
 // Adding game objects to screen
 
@@ -21,7 +27,7 @@ const player = add([
     anchor("center"), // anchor() component defines the pivot point (defaults to "topleft")
 ]);
 
-// .onUpdate() is a method on all game objects, it registers an event that runs every frame
+// .onUpdate() is a method that's found in all game objects, it registers an event that runs every frame
 player.onUpdate(() => {
     // .angle is a property provided by rotate() component, here we're incrementing the angle by 120 degrees per second, dt() is the time elapsed since last frame in seconds
     player.angle += 120 * dt();

@@ -1,5 +1,10 @@
-// @ts-check
-
+/**
+ * @file One-way platforms 2
+ * @description How to create one-way walls or platforms.
+ * @difficulty 1
+ * @tags basics, game
+ * @minver 3001.0
+ */
 kaplay();
 
 loadSprite("bean", "/sprites/bean.png");
@@ -57,7 +62,7 @@ const player = level.get("player")[0];
 
 // Always look at player
 onUpdate(() => {
-    camPos(player.worldPos());
+    setCamPos(player.worldPos());
 });
 
 // Movements
@@ -78,7 +83,7 @@ onKeyDown("right", () => {
 // Fall through when down is pressed
 onKeyDown("down", () => {
     const p = player.curPlatform();
-    if (p != null && p.is("platformEffector")) {
+    if (p != null && p.has("platformEffector")) {
         p.platformIgnore.add(player);
     }
 });

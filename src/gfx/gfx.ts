@@ -1,6 +1,14 @@
-import type { Shader, Uniform } from "../assets";
-import type { ImageSource, TexFilter, TextureOpt } from "../types";
-import { deepEq } from "../utils/";
+import type { Shader, Uniform } from "../assets/shader";
+import { getCamTransform } from "../game/camera";
+import { Mat4 } from "../math/math";
+import {
+    BlendMode,
+    type ImageSource,
+    type KAPLAYOpt,
+    type TextureOpt,
+} from "../types";
+import { deepEq } from "../utils/deepEq";
+import type { Picture } from "./draw/drawPicture";
 
 export type GfxCtx = ReturnType<typeof initGfx>;
 
@@ -13,6 +21,7 @@ export class Texture {
 
     constructor(ctx: GfxCtx, w: number, h: number, opt: TextureOpt = {}) {
         this.ctx = ctx;
+
         const gl = ctx.gl;
         const glText = ctx.gl.createTexture();
 
@@ -56,6 +65,7 @@ export class Texture {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrap);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
         this.unbind();
     }
 
@@ -99,135 +109,12 @@ export class Texture {
     }
 }
 
-/**
- * @group GFX
- */
-export class FrameBuffer {
-    ctx: GfxCtx;
-    tex: Texture;
-    glFramebuffer: WebGLFramebuffer;
-    glRenderbuffer: WebGLRenderbuffer;
-
-    constructor(ctx: GfxCtx, w: number, h: number, opt: TextureOpt = {}) {
-        this.ctx = ctx;
-        const gl = ctx.gl;
-        ctx.onDestroy(() => this.free());
-        this.tex = new Texture(ctx, w, h, opt);
-
-        const frameBuffer = gl.createFramebuffer();
-        const renderBuffer = gl.createRenderbuffer();
-
-        if (!frameBuffer || !renderBuffer) {
-            throw new Error("Failed to create framebuffer");
-        }
-
-        this.glFramebuffer = frameBuffer;
-        this.glRenderbuffer = renderBuffer;
-
-        this.bind();
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, w, h);
-        gl.framebufferTexture2D(
-            gl.FRAMEBUFFER,
-            gl.COLOR_ATTACHMENT0,
-            gl.TEXTURE_2D,
-            this.tex.glTex,
-            0,
-        );
-        gl.framebufferRenderbuffer(
-            gl.FRAMEBUFFER,
-            gl.DEPTH_STENCIL_ATTACHMENT,
-            gl.RENDERBUFFER,
-            this.glRenderbuffer,
-        );
-        this.unbind();
-    }
-
-    get width() {
-        return this.tex.width;
-    }
-
-    get height() {
-        return this.tex.height;
-    }
-
-    toImageData() {
-        const gl = this.ctx.gl;
-        const data = new Uint8ClampedArray(this.width * this.height * 4);
-        this.bind();
-        gl.readPixels(
-            0,
-            0,
-            this.width,
-            this.height,
-            gl.RGBA,
-            gl.UNSIGNED_BYTE,
-            data,
-        );
-        this.unbind();
-        // flip vertically
-        const bytesPerRow = this.width * 4;
-        const temp = new Uint8Array(bytesPerRow);
-        for (let y = 0; y < (this.height / 2 | 0); y++) {
-            const topOffset = y * bytesPerRow;
-            const bottomOffset = (this.height - y - 1) * bytesPerRow;
-            temp.set(data.subarray(topOffset, topOffset + bytesPerRow));
-            data.copyWithin(
-                topOffset,
-                bottomOffset,
-                bottomOffset + bytesPerRow,
-            );
-            data.set(temp, bottomOffset);
-        }
-        return new ImageData(data, this.width, this.height);
-    }
-
-    toDataURL() {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = this.width;
-        canvas.height = this.height;
-
-        if (!ctx) throw new Error("Failed to get 2d context");
-
-        ctx.putImageData(this.toImageData(), 0, 0);
-        return canvas.toDataURL();
-    }
-
-    clear() {
-        const gl = this.ctx.gl;
-        gl.clear(gl.COLOR_BUFFER_BIT);
-    }
-
-    draw(action: () => void) {
-        this.bind();
-        action();
-        this.unbind();
-    }
-
-    bind() {
-        this.ctx.pushFramebuffer(this.glFramebuffer);
-        this.ctx.pushRenderbuffer(this.glRenderbuffer);
-        this.ctx.pushViewport({ x: 0, y: 0, w: this.width, h: this.height });
-    }
-
-    unbind() {
-        this.ctx.popFramebuffer();
-        this.ctx.popRenderbuffer();
-        this.ctx.popViewport();
-    }
-
-    free() {
-        const gl = this.ctx.gl;
-        gl.deleteFramebuffer(this.glFramebuffer);
-        gl.deleteRenderbuffer(this.glRenderbuffer);
-        this.tex.free();
-    }
-}
-
 export type VertexFormat = {
     name: string;
     size: number;
 }[];
+
+const identityMatrix = new Mat4();
 
 export class BatchRenderer {
     ctx: GfxCtx;
@@ -246,7 +133,11 @@ export class BatchRenderer {
     curPrimitive: GLenum | null = null;
     curTex: Texture | null = null;
     curShader: Shader | null = null;
-    curUniform: Uniform = {};
+    curUniform: Uniform | null = null;
+    curBlend: BlendMode = BlendMode.Normal;
+    curFixed: boolean | undefined = undefined;
+
+    picture: Picture | null = null;
 
     constructor(
         ctx: GfxCtx,
@@ -282,37 +173,92 @@ export class BatchRenderer {
 
     push(
         primitive: GLenum,
-        verts: number[],
+        vertices: number[],
         indices: number[],
         shader: Shader,
         tex: Texture | null = null,
-        uniform: Uniform = {},
+        uniform: Uniform | null = null,
+        blend: BlendMode,
+        width: number,
+        height: number,
+        fixed: boolean,
     ) {
+        // If we have a picture, redirect data to the picture instead
+        if (this.picture) {
+            const index = this.picture.indices.length;
+            const count = indices.length;
+            const indexOffset = this.picture.vertices.length / this.stride;
+            let l = vertices.length;
+            for (let i = 0; i < l; i++) {
+                this.picture.vertices.push(vertices[i]);
+            }
+            l = indices.length;
+            for (let i = 0; i < l; i++) {
+                this.picture.indices.push(indices[i] + indexOffset);
+            }
+            const material = {
+                tex: tex || undefined,
+                shader,
+                uniform: uniform || undefined,
+                blend,
+            };
+            if (this.picture.commands.length) {
+                const lastCommand =
+                    this.picture.commands[this.picture.commands.length - 1];
+                const lastMaterial = lastCommand.material;
+                if (
+                    lastMaterial.tex == material.tex
+                    && lastMaterial.shader == material.shader
+                    && lastMaterial.uniform == material.uniform
+                    && lastMaterial.blend == material.blend
+                ) {
+                    lastCommand.count += count;
+                    return;
+                }
+            }
+            const command = {
+                material,
+                index,
+                count,
+            };
+            this.picture.commands.push(command);
+            return;
+        }
+
+        // If texture, shader, blend mode or uniforms (including fixed) have changed, flush first
+        // If the buffers are full, flush first
         if (
             primitive !== this.curPrimitive
             || tex !== this.curTex
             || shader !== this.curShader
-            || !deepEq(this.curUniform, uniform)
-            || this.vqueue.length + verts.length * this.stride
+            || ((this.curUniform != uniform)
+                && !deepEq(this.curUniform, uniform))
+            || blend !== this.curBlend
+            || fixed !== this.curFixed
+            || this.vqueue.length + vertices.length * this.stride
                 > this.maxVertices
             || this.iqueue.length + indices.length > this.maxIndices
         ) {
-            this.flush();
+            this.flush(width, height);
+            this.setBlend(blend);
         }
         const indexOffset = this.vqueue.length / this.stride;
-        for (const v of verts) {
-            this.vqueue.push(v);
+        let l = vertices.length;
+        for (let i = 0; i < l; i++) {
+            this.vqueue.push(vertices[i]);
         }
-        for (const i of indices) {
-            this.iqueue.push(i + indexOffset);
+        l = indices.length;
+        for (let i = 0; i < l; i++) {
+            this.iqueue.push(indices[i] + indexOffset);
         }
         this.curPrimitive = primitive;
         this.curShader = shader;
         this.curTex = tex;
         this.curUniform = uniform;
+        this.curFixed = fixed;
     }
 
-    flush() {
+    flush(width: number, height: number) {
         if (
             !this.curPrimitive
             || !this.curShader
@@ -324,32 +270,61 @@ export class BatchRenderer {
 
         const gl = this.ctx.gl;
 
+        // Bind vertex data
         this.ctx.pushArrayBuffer(this.glVBuf);
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(this.vqueue));
+
+        // Bind index data
         this.ctx.pushElementArrayBuffer(this.glIBuf);
         gl.bufferSubData(
             gl.ELEMENT_ARRAY_BUFFER,
             0,
             new Uint16Array(this.iqueue),
         );
+
+        // Set vertex format
         this.ctx.setVertexFormat(this.vertexFormat);
+
+        // Bind Shader
         this.curShader.bind();
-        this.curShader.send(this.curUniform);
+
+        // Send user uniforms
+        if (this.curUniform) {
+            this.curShader.send(this.curUniform);
+        }
+
+        // Send system uniforms
+        this.curShader.send({
+            width,
+            height,
+            camera: this.curFixed ? identityMatrix : getCamTransform(),
+            transform: identityMatrix,
+        });
+
+        // Bind texture
         this.curTex?.bind();
+
+        // Draw vertex buffer using active indices
         gl.drawElements(
             this.curPrimitive,
             this.iqueue.length,
             gl.UNSIGNED_SHORT,
             0,
         );
+
+        // Unbind texture and shader
         this.curTex?.unbind();
         this.curShader.unbind();
 
+        // Unbind buffers
         this.ctx.popArrayBuffer();
         this.ctx.popElementArrayBuffer();
 
-        this.vqueue = [];
-        this.iqueue = [];
+        // Reset local buffers
+        this.vqueue.length = 0;
+        this.iqueue.length = 0;
+
+        // Increase draw
         this.numDraws++;
     }
 
@@ -357,6 +332,54 @@ export class BatchRenderer {
         const gl = this.ctx.gl;
         gl.deleteBuffer(this.glVBuf);
         gl.deleteBuffer(this.glIBuf);
+    }
+
+    setBlend(blend: BlendMode) {
+        if (blend !== this.curBlend) {
+            const gl = this.ctx.gl;
+            this.curBlend = blend;
+            switch (this.curBlend) {
+                case BlendMode.Normal:
+                    gl.blendFuncSeparate(
+                        gl.ONE,
+                        gl.ONE_MINUS_SRC_ALPHA,
+                        gl.ONE,
+                        gl.ONE_MINUS_SRC_ALPHA,
+                    );
+                    break;
+                case BlendMode.Add:
+                    gl.blendFuncSeparate(
+                        gl.ONE,
+                        gl.ONE,
+                        gl.ONE,
+                        gl.ONE_MINUS_SRC_ALPHA,
+                    );
+                    break;
+                case BlendMode.Multiply:
+                    gl.blendFuncSeparate(
+                        gl.DST_COLOR,
+                        gl.ZERO,
+                        gl.ONE,
+                        gl.ONE_MINUS_SRC_ALPHA,
+                    );
+                    break;
+                case BlendMode.Screen:
+                    gl.blendFuncSeparate(
+                        gl.ONE_MINUS_DST_COLOR,
+                        gl.ONE,
+                        gl.ONE,
+                        gl.ONE_MINUS_SRC_ALPHA,
+                    );
+                    break;
+                case BlendMode.Overlay:
+                    gl.blendFuncSeparate(
+                        gl.DST_COLOR,
+                        gl.ONE_MINUS_SRC_ALPHA,
+                        gl.ONE,
+                        gl.ONE_MINUS_SRC_ALPHA,
+                    );
+            }
+        }
     }
 }
 
@@ -370,7 +393,7 @@ export class Mesh {
     constructor(
         ctx: GfxCtx,
         format: VertexFormat,
-        verts: number[],
+        vertices: number[],
         indices: number[],
     ) {
         const gl = ctx.gl;
@@ -383,7 +406,11 @@ export class Mesh {
         this.glVBuf = glVBuf;
 
         ctx.pushArrayBuffer(this.glVBuf);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+        gl.bufferData(
+            gl.ARRAY_BUFFER,
+            new Float32Array(vertices),
+            gl.STATIC_DRAW,
+        );
         ctx.popArrayBuffer();
 
         this.glIBuf = gl.createBuffer()!;
@@ -398,16 +425,16 @@ export class Mesh {
         this.count = indices.length;
     }
 
-    draw(primitive?: GLenum) {
+    draw(primitive?: GLenum, index?: GLuint, count?: GLuint): void {
         const gl = this.ctx.gl;
         this.ctx.pushArrayBuffer(this.glVBuf);
         this.ctx.pushElementArrayBuffer(this.glIBuf);
         this.ctx.setVertexFormat(this.vertexFormat);
         gl.drawElements(
             primitive ?? gl.TRIANGLES,
-            this.count,
+            index ?? this.count,
             gl.UNSIGNED_SHORT,
-            0,
+            count ?? 0,
         );
         this.ctx.popArrayBuffer();
         this.ctx.popElementArrayBuffer();
@@ -435,9 +462,7 @@ function genStack<T>(setFunc: (item: T | null) => void) {
     return [push, pop, cur] as const;
 }
 
-export function initGfx(gl: WebGLRenderingContext, opts: {
-    texFilter?: TexFilter;
-} = {}) {
+export function initGfx(gl: WebGLRenderingContext, opts: KAPLAYOpt = {}) {
     const gc: Array<() => void> = [];
 
     function onDestroy(action: () => unknown) {
@@ -457,6 +482,7 @@ export function initGfx(gl: WebGLRenderingContext, opts: {
         curVertexFormat = fmt;
         const stride = fmt.reduce((sum, f) => sum + f.size, 0);
         fmt.reduce((offset, f, i) => {
+            gl.enableVertexAttribArray(i);
             gl.vertexAttribPointer(
                 i,
                 f.size,
@@ -465,7 +491,6 @@ export function initGfx(gl: WebGLRenderingContext, opts: {
                 stride * 4,
                 offset,
             );
-            gl.enableVertexAttribArray(i);
             return offset + f.size * 4;
         }, 0);
     }

@@ -1,6 +1,6 @@
-# KAPLAY
+# KAPLAY.js, a JavaScript game library
 
-![KAPLAY](/kaplay.webp)
+![#KAPLAY](/kaplay.webp)
 
 [**KAPLAY**](https://kaplayjs.com/) is a JavaScript library that helps you make
 games fast and fun!
@@ -135,7 +135,7 @@ add([
 also works with CommonJS
 
 ```js
-const kaboom = require("kaplay");
+const kaplay = require("kaplay");
 ```
 
 Note that you'll need to use a bundler like `esbuild` or `webpack` to use KAPLAY
@@ -146,7 +146,7 @@ with NPM
 This exports a global `kaplay` function
 
 ```html
-<script src="https://unpkg.com/kaplay@3000.1.17/dist/kaboom.js"></script>
+<script src="https://unpkg.com/kaplay@3001.0.9/dist/kaplay.js"></script>
 <script>
 kaplay()
 </script>
@@ -156,7 +156,7 @@ or use with es modules
 
 ```html
 <script type="module">
-import kaplay from "https://unpkg.com/kaplay@3000.1.17/dist/kaboom.mjs"
+import kaplay from "https://unpkg.com/kaplay@3001.0.9/dist/kaplay.mjs"
 kaplay()
 </script>
 ```
@@ -165,16 +165,14 @@ works all CDNs that supports NPM packages, e.g. jsdelivr, skypack
 
 ## Documentation
 
+- **v4000**: https://v4000.kaplayjs.com/
 - **v3001**: https://kaplayjs.com/
-- **v3000**: https://kaboomjs.com/
-- **v2000**: https://2000.kaboomjs.com/
-- **v0.5.0**: https://legacy.kaboomjs.com/
 
 ## Community
 
 - [Discord Server](https://discord.gg/aQ6RuQm3TF)
 - [GitHub Discussions](https://github.com/kaplayjs/kaplay/discussions)
-- [Twitter](https://twitter.com/Kaboomjs)
+- [Twitter](https://twitter.com/kaplayjs)
 
 ### Games
 
@@ -187,14 +185,18 @@ Collections of games made with KAPLAY (and Kaboom), selected by KAPLAY:
 
 - Thanks to [tga](https://space55.xyz) for all his work on the original
   Kaboom.js
-- Thanks to [mulfok](https://twitter.com/MulfoK) for the amazing
+- Thanks to [mulfok](https://twitter.com/MulfoK) for the awesome
   [mulfok32](https://lospec.com/palette-list/mulfok32) color palette, used in
-  KAPLAY sprites
+  KAPLAY sprites and art
+- Thanks to [Pixabay](https://pixabay.com/users/pixabay-1/) for the great
+  [burp](https://pixabay.com/sound-effects/burp-104984/) sound, used in `burp()`
+  function
+- Thanks to [Kenney](https://kenney.nl/) for all used assets for examples
+  - [Impact Sound Pack](https://kenney.nl/assets/impact-sounds)
+  - [1-Bit Platformer Pack](https://kenney.nl/assets/1-bit-platformer-pack)
 - Thanks to [abrudz](https://github.com/abrudz) for the amazing
   [APL386 font](https://abrudz.github.io/APL386/)
 - Thanks to [Polyducks](http://polyducks.co.uk/) for the amazing
   [kitchen sink font](https://polyducks.itch.io/kitchen-sink-textmode-font) font
 - Thanks to [0x72](https://0x72.itch.io/) for the amazing
   [Dungeon Tileset](https://0x72.itch.io/dungeontileset-ii)
-- Thanks to [Kenney](https://kenney.nl/) for the amazing
-  [1-Bit Platformer Pack](https://kenney.nl/assets/1-bit-platformer-pack)

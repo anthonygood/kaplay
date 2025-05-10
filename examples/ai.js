@@ -1,14 +1,21 @@
-// @ts-check
+/**
+ * @file AI with State Machines
+ * @description How to create simple game AI using state machines.
+ * @difficulty 1
+ * @tags basics, ai
+ * @minver 3001.0
+ */
 
 // Use state() component to handle basic AI
 
-// Start kaboom
+// Start KAPLAY
 kaplay();
 
 // Load assets
 loadSprite("bean", "/sprites/bean.png");
 loadSprite("ghosty", "/sprites/ghosty.png");
 
+// Some constants
 const SPEED = 320;
 const ENEMY_SPEED = 160;
 const BULLET_SPEED = 800;
@@ -54,18 +61,21 @@ enemy.onStateEnter("attack", async () => {
         ]);
     }
 
+    // Waits 1 second to make the enemy enter in "move" state
     await wait(1);
     enemy.enterState("move");
 });
 
+// When we enter "move" state, we stay there for 2 sec and then go back to "idle"
 enemy.onStateEnter("move", async () => {
     await wait(2);
     enemy.enterState("idle");
 });
 
-// Like .onUpdate() which runs every frame, but only runs when the current state is "move"
-// Here we move towards the player every frame if the current state is "move"
+// .onStateUpdate() is similar to .onUpdate(), it'll run every frame, but in this case
+// Only when the current state is "move"
 enemy.onStateUpdate("move", () => {
+    // We move the enemy in the direction of the player
     if (!player.exists()) return;
     const dir = player.pos.sub(enemy.pos).unit();
     enemy.move(dir.scale(ENEMY_SPEED));

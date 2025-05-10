@@ -1,10 +1,10 @@
-import { Asset, loadImg, loadProgress } from "../assets";
-import type { DrawSpriteOpt } from "../gfx";
+import type { DrawSpriteOpt } from "../gfx/draw/drawSprite";
 import type { Texture } from "../gfx/gfx";
-import { assets } from "../kaplay";
+import { _k } from "../kaplay";
 import beanSpriteSrc from "../kassets/bean.png";
 import { Quad } from "../math/math";
 import { type ImageSource } from "../types";
+import { Asset, loadImg, loadProgress } from "./asset";
 import { fixURL } from "./utils";
 
 /**
@@ -14,11 +14,11 @@ export type SpriteAnim = number | {
     /**
      * The starting frame.
      */
-    from: number;
+    from?: number;
     /**
      * The end frame.
      */
-    to: number;
+    to?: number;
     /**
      * If this anim should be played in loop.
      */
@@ -31,6 +31,12 @@ export type SpriteAnim = number | {
      * This anim's speed in frames per second.
      */
     speed?: number;
+    /**
+     * List of frames for the animation.
+     *
+     * If this property exists, **from, to, and pingpong will be ignored**.
+     */
+    frames?: number[];
 };
 
 /**
@@ -44,7 +50,7 @@ export type SpriteAnims = Record<string, SpriteAnim>;
  */
 export interface LoadSpriteOpt {
     /**
-     * If the defined area contains multiple sprites, how many frames are in the area hozizontally.
+     * If the defined area contains multiple sprites, how many frames are in the area horizontally.
      */
     sliceX?: number;
     /**
@@ -67,6 +73,10 @@ export interface LoadSpriteOpt {
      * Animation configuration.
      */
     anims?: SpriteAnims;
+    /**
+     * If the sprite is a single image.
+     */
+    singular?: boolean;
 }
 
 export type NineSlice = {
@@ -95,17 +105,20 @@ export class SpriteData {
     frames: Quad[] = [new Quad(0, 0, 1, 1)];
     anims: SpriteAnims = {};
     slice9: NineSlice | null = null;
+    packerId: number | null;
 
     constructor(
         tex: Texture,
         frames?: Quad[],
         anims: SpriteAnims = {},
         slice9: NineSlice | null = null,
+        packerId: number | null = null,
     ) {
         this.tex = tex;
         if (frames) this.frames = frames;
         this.anims = anims;
         this.slice9 = slice9;
+        this.packerId = packerId;
     }
 
     /**
@@ -132,7 +145,9 @@ export class SpriteData {
         data: ImageSource,
         opt: LoadSpriteOpt = {},
     ): SpriteData {
-        const [tex, quad] = assets.packer.add(data);
+        const [tex, quad, packerId] = opt.singular
+            ? _k.assets.packer.add_single(data)
+            : _k.assets.packer.add(data);
         const frames = opt.frames
             ? opt.frames.map((f) =>
                 new Quad(
@@ -150,7 +165,8 @@ export class SpriteData {
                 quad.w,
                 quad.h,
             );
-        return new SpriteData(tex, frames, opt.anims, opt.slice9);
+
+        return new SpriteData(tex, frames, opt.anims, opt.slice9, packerId);
     }
 
     static fromURL(
@@ -179,9 +195,9 @@ export function resolveSprite(
             throw new Error(`Sprite not found: ${src}`);
         }
     }
-    else if (src instanceof SpriteData) {
-        return Asset.loaded(src);
-    }
+    // else if (src instanceof SpriteData) {
+    //     return Asset.loaded(src);
+    // }
     else if (src instanceof Asset) {
         return src;
     }
@@ -191,7 +207,7 @@ export function resolveSprite(
 }
 
 export function getSprite(name: string): Asset<SpriteData> | null {
-    return assets.sprites.get(name) ?? null;
+    return _k.assets.sprites.get(name) ?? null;
 }
 
 // load a sprite to asset manager
@@ -205,9 +221,10 @@ export function loadSprite(
     },
 ): Asset<SpriteData> {
     src = fixURL(src);
+
     if (Array.isArray(src)) {
         if (src.some((s) => typeof s === "string")) {
-            return assets.sprites.add(
+            return _k.assets.sprites.add(
                 name,
                 Promise.all(src.map((s) => {
                     return typeof s === "string"
@@ -217,7 +234,7 @@ export function loadSprite(
             );
         }
         else {
-            return assets.sprites.addLoaded(
+            return _k.assets.sprites.addLoaded(
                 name,
                 createSpriteSheet(src as ImageSource[], opt),
             );
@@ -225,10 +242,10 @@ export function loadSprite(
     }
     else {
         if (typeof src === "string") {
-            return assets.sprites.add(name, SpriteData.from(src, opt));
+            return _k.assets.sprites.add(name, SpriteData.from(src, opt));
         }
         else {
-            return assets.sprites.addLoaded(
+            return _k.assets.sprites.addLoaded(
                 name,
                 SpriteData.fromImage(src, opt),
             );
@@ -256,7 +273,6 @@ export function slice(x = 1, y = 1, dx = 0, dy = 0, w = 1, h = 1): Quad[] {
 }
 
 // TODO: load synchronously if passed ImageSource
-
 export function createSpriteSheet(
     images: ImageSource[],
     opt: LoadSpriteOpt = {},
@@ -266,8 +282,10 @@ export function createSpriteSheet(
     const height = images[0].height;
     canvas.width = width * images.length;
     canvas.height = height;
+
     const c2d = canvas.getContext("2d");
     if (!c2d) throw new Error("Failed to create canvas context");
+
     images.forEach((img, i) => {
         if (img instanceof ImageData) {
             c2d.putImageData(img, i * width, 0);
@@ -276,7 +294,9 @@ export function createSpriteSheet(
             c2d.drawImage(img, i * width, 0);
         }
     });
+
     const merged = c2d.getImageData(0, 0, images.length * width, height);
+
     return SpriteData.fromImage(merged, {
         ...opt,
         sliceX: images.length,

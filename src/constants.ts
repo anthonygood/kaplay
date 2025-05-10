@@ -43,8 +43,14 @@ varying vec2 v_uv;
 varying vec4 v_color;
 varying vec4 v_custom;
 
+uniform float width;
+uniform float height;
+uniform mat4 camera;
+uniform mat4 transform;
+
 vec4 def_vert() {
-	return vec4(a_pos, 0.0, 1.0);
+	vec4 pos = camera * transform * vec4(a_pos, 0.0, 1.0);
+	return vec4(pos.x / width * 2.0 - 1.0, pos.y / -height * 2.0 + 1.0, pos.z, pos.w);
 }
 
 {{user}}
@@ -71,7 +77,8 @@ varying vec4 v_custom;
 uniform sampler2D u_tex;
 
 vec4 def_frag() {
-	return v_color * texture2D(u_tex, v_uv);
+	vec4 texColor = texture2D(u_tex, v_uv);
+	return vec4((v_color.rgb * texColor.rgb), texColor.a) * v_color.a;
 }
 
 {{user}}
@@ -105,8 +112,8 @@ export const COMP_EVENTS = new Set([
     "inspect",
     "drawInspect",
 ]);
-export const MULTI_WORD_RE = /^\w+$/;
 export const DEF_OFFSCREEN_DIS = 200;
 // maximum y velocity with body()
 export const DEF_JUMP_FORCE = 640;
 export const MAX_VEL = 65536;
+export const EVENT_CANCEL_SYMBOL = Symbol.for("kaplay.cancel");

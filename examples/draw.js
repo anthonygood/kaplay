@@ -1,10 +1,16 @@
-// @ts-check
+/**
+ * @file Draw
+ * @description How to use KAPLAY as a canvas draw library.
+ * @difficulty 0
+ * @tags basics
+ * @minver 3001.0
+ */
 
-// Kaboom as pure rendering lib (no component / game obj etc.)
-
+// Kaplay as pure rendering lib (no component / game obj etc.)
 kaplay();
 loadSprite("bean", "/sprites/bean.png");
 
+// Loads a spiral shader
 loadShader(
     "spiral",
     null,
@@ -32,7 +38,7 @@ const trail = [];
 const outline = {
     width: 4,
     color: rgb(0, 0, 0),
-    join: "miter",
+    join: "bevel",
 };
 
 function drawStuff() {

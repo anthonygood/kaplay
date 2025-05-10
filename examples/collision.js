@@ -1,8 +1,14 @@
-// @ts-check
+/**
+ * @file Collision
+ * @description How to handle collisions betweem game objects.
+ * @difficulty 0
+ * @tags basics, comps, physics
+ * @minver 3001.0
+ */
 
 // Collision handling
 
-// Start kaboom
+// Start kaplay
 kaplay({
     scale: 2,
 });
@@ -121,4 +127,4 @@ player.onUpdate(() => {
 // Can also be toggled by pressing F1
 debug.inspect = true;
 
-// Check out https://kaboomjs.com#AreaComp for everything area() provides
+// Check out https://kaplayjs.com/doc/AreaComp/ for everything area() provides

@@ -1,8 +1,13 @@
-// @ts-check
-
+/**
+ * @file Movement
+ * @description How to make basic movement.
+ * @difficulty 0
+ * @tags basics, input
+ * @minver 3001.0
+ */
 // Input handling and basic player movement
 
-// Start kaboom
+// Start kaplay
 kaplay();
 
 // Load assets

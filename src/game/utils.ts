@@ -13,6 +13,8 @@ export function getRenderProps(obj: GameObj<any>) {
         outline: obj.outline,
         shader: obj.shader,
         uniform: obj.uniform,
+        blend: obj.blend,
+        // TODO: double check when to convert to array
         customA: obj.customA,
         customB: obj.customB,
     };

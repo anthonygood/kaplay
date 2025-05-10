@@ -5,17 +5,13 @@ import {
     VERT_TEMPLATE,
     VERTEX_FORMAT,
 } from "../constants";
-import { type GfxCtx } from "../gfx";
-import { assets, gfx } from "../kaplay";
+import type { GfxCtx } from "../gfx/gfx";
+import { _k } from "../kaplay";
 import { Color } from "../math/color";
-import { Mat4, Vec2 } from "../math/math";
+import { Mat23, Mat4, Vec2 } from "../math/math";
 import type { RenderProps } from "../types";
-import {
-    arrayIsColor,
-    arrayIsNumber,
-    arrayIsVec2,
-    getErrorMessage,
-} from "../utils";
+import { arrayIsColor, arrayIsNumber, arrayIsVec2 } from "../utils/asserts";
+import { getErrorMessage } from "../utils/log";
 import { fetchText, loadProgress } from "./asset";
 import { Asset } from "./asset";
 import { fixURL } from "./utils";
@@ -30,6 +26,7 @@ export type UniformValue =
     | Vec2
     | Color
     | Mat4
+    | Mat23
     | number[]
     | Vec2[]
     | Color[];
@@ -109,6 +106,31 @@ export class Shader {
             else if (val instanceof Mat4) {
                 gl.uniformMatrix4fv(loc, false, new Float32Array(val.m));
             }
+            else if (val instanceof Mat23) {
+                gl.uniformMatrix4fv(
+                    loc,
+                    false,
+                    new Float32Array([
+                        val.a,
+                        val.b,
+                        0,
+                        0,
+                        val.c,
+                        val.d,
+                        0,
+                        0,
+                        0,
+                        0,
+                        1,
+                        0,
+                        val.e,
+                        val.f,
+                        0,
+                        1,
+                    ]),
+                );
+                // console.log(val)
+            }
             else if (val instanceof Color) {
                 gl.uniform3f(loc, val.r, val.g, val.b);
             }
@@ -170,7 +192,7 @@ export function resolveShader(
     src: RenderProps["shader"],
 ): ShaderData | Asset<ShaderData> | null {
     if (!src) {
-        return gfx.defShader;
+        return _k.gfx.defShader;
     }
     if (typeof src === "string") {
         const shader = getShader(src);
@@ -192,7 +214,7 @@ export function resolveShader(
 }
 
 export function getShader(name: string): Asset<ShaderData> | null {
-    return assets.shaders.get(name) ?? null;
+    return _k.assets.shaders.get(name) ?? null;
 }
 
 export function loadShader(
@@ -200,7 +222,10 @@ export function loadShader(
     vert?: string,
     frag?: string,
 ) {
-    return assets.shaders.addLoaded(name, makeShader(gfx.ggl, vert, frag));
+    return _k.assets.shaders.addLoaded(
+        name,
+        makeShader(_k.gfx.ggl, vert, frag),
+    );
 }
 
 export function loadShaderURL(
@@ -216,7 +241,7 @@ export function loadShaderURL(
             : Promise.resolve(null);
     const load = Promise.all([resolveUrl(vert), resolveUrl(frag)])
         .then(([vcode, fcode]: [string | null, string | null]) => {
-            return makeShader(gfx.ggl, vcode, fcode);
+            return makeShader(_k.gfx.ggl, vcode, fcode);
         });
-    return assets.shaders.add(name, load);
+    return _k.assets.shaders.add(name, load);
 }

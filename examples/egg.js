@@ -1,6 +1,12 @@
-// @ts-check
-// Egg minigames (yes, like Peppa)
+/**
+ * @file Egg
+ * @description A simple game about eggs.
+ * @difficulty 0
+ * @tags game
+ * @minver 3001.0
+ */
 
+// Egg minigames (yes, like Peppa)
 kaplay({
     background: [135, 62, 132],
 });

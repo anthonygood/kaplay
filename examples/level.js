@@ -1,4 +1,10 @@
-// @ts-check
+/**
+ * @file Level
+ * @description How to build levels from ASCII
+ * @difficulty 0
+ * @tags basics, game
+ * @minver 3001.0
+ */
 
 // Build levels with addLevel()
 
@@ -11,7 +17,7 @@ loadSprite("coin", "/sprites/coin.png");
 loadSprite("spike", "/sprites/spike.png");
 loadSprite("grass", "/sprites/grass.png");
 loadSprite("ghosty", "/sprites/ghosty.png");
-loadSound("score", "/examples/sounds/score.mp3");
+loadSound("score", "/sounds/score.mp3");
 
 const SPEED = 480;
 

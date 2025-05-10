@@ -1,5 +1,7 @@
-import type { Asset, BitmapFontData } from "../../assets";
+import type { Asset } from "../../assets/asset";
+import type { BitmapFontData } from "../../assets/bitmapFont";
 import type { FontData } from "../../assets/font";
+import type { Uniform } from "../../assets/shader";
 import type { Color } from "../../math/color";
 import type { Vec2 } from "../../math/math";
 import type { Anchor, RenderProps } from "../../types";
@@ -67,6 +69,11 @@ export type DrawTextOpt = RenderProps & {
      * @since v2000.2
      */
     styles?: Record<string, CharTransform | CharTransformFunc>;
+    /**
+     * If true, any (whitespace) indent on the first line of the paragraph
+     * will be copied to all of the lines for those parts that text-wrap.
+     */
+    indentAll?: boolean;
 };
 
 /**
@@ -80,11 +87,70 @@ export type CharTransformFunc = (idx: number, ch: string) => CharTransform;
  * @group Options
  */
 export interface CharTransform {
+    /**
+     * Offset to apply to the position of the text character.
+     * Shifts the character's position by the specified 2D vector.
+     */
     pos?: Vec2;
+
+    /**
+     * Scale transformation to apply to the text character's current scale.
+     * When a number, it is scaled uniformly.
+     * Given a 2D vector, it is scaled independently along the X and Y axis.
+     */
     scale?: Vec2 | number;
+
+    /**
+     * Increases the amount of degrees to rotate the text character.
+     */
     angle?: number;
+
+    /**
+     * Color transformation applied to the text character.
+     * Multiplies the current color with this color.
+     */
     color?: Color;
+
+    /**
+     * Opacity multiplication applied to the text character.
+     * For example, an opacity of 0.4 with 2 set in the transformation, the resulting opacity will be 0.8 (0.4 × 2).
+     */
     opacity?: number;
+
+    /**
+     * If true, the styles applied by this specific {@link DrawTextOpt.styles} entry transform
+     * will override, rather than compose with, the default styles given in {@link DrawTextOpt.transform} and by other
+     * components' styles.
+     */
+    override?: boolean;
+
+    /**
+     * If the font for this character should be different from the default font
+     * or the one specified in {@link DrawTextOpt.font}.
+     * Because the font can't be composed like the other properties,
+     * this will override the font even if {@link CharTransform.override} is false.
+     */
+    font?: string | FontData;
+
+    /**
+     * If true, characters that have a X scale that is not 1 won't have the bounding box stretched to fit the character,
+     * and may end up overlapping with adjacent characters.
+     *
+     * @default true
+     */
+    stretchInPlace?: boolean;
+
+    /**
+     * A name for a shader that will be applied to this character only.
+     */
+    shader?: string;
+
+    /**
+     * Values to use for the shader's uniform inputs.
+     * If there is no shader set (by this character's transform or an entire-text
+     * transform), this is not used.
+     */
+    uniform?: Uniform;
 }
 
 /**

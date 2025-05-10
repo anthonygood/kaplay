@@ -1,4 +1,10 @@
-// @ts-check
+/**
+ * @file Sprite-Atlas
+ * @description How to load a sprite atlas in KAPLAY.
+ * @difficulty 0
+ * @tags animation
+ * @minver 3001.0
+ */
 
 kaplay({
     scale: 4,
@@ -6,7 +12,7 @@ kaplay({
 });
 
 // https://0x72.itch.io/dungeontileset-ii
-loadSpriteAtlas("/examples/sprites/dungeon.png", {
+loadSpriteAtlas("/sprites/dungeon.png", {
     "hero": {
         "x": 128,
         "y": 196,
@@ -320,12 +326,12 @@ const dirs = {
 };
 
 player.onUpdate(() => {
-    camPos(player.pos);
+    setCamPos(player.pos);
 });
 
 player.onPhysicsResolve(() => {
     // Set the viewport center to player.pos
-    camPos(player.pos);
+    setCamPos(player.pos);
 });
 
 onKeyDown("right", () => {

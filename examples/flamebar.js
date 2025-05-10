@@ -1,8 +1,16 @@
+/**
+ * @file Flame bar
+ * @description How to make mario-like flamebars.
+ * @difficulty 1
+ * @tags basics
+ * @minver 3001.0
+ */
+
 // @ts-check
 
 // Mario-like flamebar
 
-// Start kaboom
+// Start kaplay
 kaplay();
 
 // Load assets

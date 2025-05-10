@@ -1,6 +1,7 @@
-name: test-kaplay
+name: Test KAPLAY
 
-on: [push, pull_request]
+on:
+  push:
 
 jobs:
   build:
@@ -26,4 +27,5 @@ jobs:
       - name: Run vitests
         run: pnpm run test:vite
       - name: Upload Package
+        if: ${{ github.event_name == 'pull_request' }}
         run: pnpx pkg-pr-new publish

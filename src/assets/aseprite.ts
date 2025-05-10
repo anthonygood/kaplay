@@ -1,6 +1,6 @@
-import { assets } from "../kaplay";
-import { Quad } from "../math";
-import { getFileName } from "../utils";
+import { _k } from "../kaplay";
+import { Quad } from "../math/math";
+import { getFileName } from "../utils/dataURL";
 import { type Asset, fetchJSON } from "./asset";
 import { type LoadSpriteSrc, type SpriteAnim, SpriteData } from "./sprite";
 import { fixURL } from "./utils";
@@ -41,7 +41,7 @@ export function loadAseprite(
         ? fetchJSON(jsonSrc)
         : Promise.resolve(jsonSrc);
 
-    return assets.sprites.add(
+    return _k.assets.sprites.add(
         name,
         resolveJSON.then((data: AsepriteData) => {
             const size = data.meta.size;

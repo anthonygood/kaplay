@@ -1,7 +1,14 @@
-// @ts-check
+/**
+ * @file Eat Love
+ * @description A simple game to eat love.
+ * @difficulty 1
+ * @tags game
+ * @minver 3001.0
+ */
 
 kaplay();
 
+// A lttle game about eating fruit!
 const fruits = [
     "apple",
     "pineapple",
@@ -15,10 +22,11 @@ for (const fruit of fruits) {
 
 loadSprite("bean", "/sprites/bean.png");
 loadSprite("heart", "/sprites/heart.png");
-loadSound("hit", "/examples/sounds/hit.mp3");
-loadSound("wooosh", "/examples/sounds/wooosh.mp3");
+loadSound("hit", "/sounds/hit.mp3");
+loadSound("wooosh", "/sounds/wooosh.mp3");
 
 scene("start", () => {
+    // Plays the wooosh sound
     play("wooosh");
 
     add([
