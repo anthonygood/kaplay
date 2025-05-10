@@ -2553,6 +2553,7 @@ export interface KAPLAYCtx<
     vec2(x: number, y: number): Vec2;
     vec2(p: Vec2): Vec2;
     vec2(xy: number): Vec2;
+    vec2(p: Vec2 | number): Vec2;
     vec2(): Vec2;
     /**
      * Create a color from RGB values (0 - 255).
