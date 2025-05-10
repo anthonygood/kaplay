@@ -333,6 +333,7 @@ const kaplay = <
 ): TPlugins extends [undefined] ? KAPLAYCtx<TButtons, TButtonsName>
     : KAPLAYCtx<TButtons, TButtonsName> & MergePlugins<TPlugins> =>
 {
+    console.log('🤡🤡🤡🤡🤡 kaplay')
     globalOpt = gopt;
     const root = gopt.root ?? document.body;
 
