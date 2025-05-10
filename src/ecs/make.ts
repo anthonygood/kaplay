@@ -315,6 +315,7 @@ export function make<T extends CompList<unknown>>(
         */
         use(comp: Comp) {
             if (!comp || typeof comp != "object") {
+                if (comp === null || comp === false) return;
                 throw new Error(
                     `You can only pass objects to .use(), you passed a "${typeof comp}"`,
                 );
