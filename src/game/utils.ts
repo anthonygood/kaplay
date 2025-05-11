@@ -15,6 +15,12 @@ export function getRenderProps(obj: GameObj<any>) {
         uniform: obj.uniform,
         blend: obj.blend,
         // TODO: double check when to convert to array
+        custom: [
+            obj.customA?.x ?? 0,
+            obj.customA?.y ?? 0,
+            obj.customB?.x ?? 0,
+            obj.customB?.y ?? 0,
+        ] as [number, number, number, number],
         customA: obj.customA,
         customB: obj.customB,
     };

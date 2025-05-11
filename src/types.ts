@@ -6711,6 +6711,7 @@ export interface Attributes {
     uv: number[];
     color: number[];
     opacity: number[];
+    custom?: number[];
 }
 
 /**
@@ -6777,6 +6778,7 @@ export type DrawUVQuadOpt = RenderProps & {
      * The anchor point, or the pivot point. Default to "topleft".
      */
     anchor?: Anchor | Vec2;
+    custom?: [number, number, number, number];
 };
 
 /**
