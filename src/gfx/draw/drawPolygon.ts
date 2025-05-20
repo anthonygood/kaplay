@@ -37,22 +37,7 @@ export function drawPolygon(opt: DrawPolygonOpt) {
             uv: new Array<number>(opt.pts.length * 2),
             color: new Array<number>(opt.pts.length * 3),
             opacity: new Array<number>(opt.pts.length),
-            custom: [
-                opt.customA?.x ?? 0,
-                opt.customA?.y ?? 0,
-                opt.customB?.x ?? 0,
-                opt.customB?.y ?? 0,
-
-                opt.customA?.x ?? 0,
-                opt.customA?.y ?? 0,
-                opt.customB?.x ?? 0,
-                opt.customB?.y ?? 0,
-
-                opt.customA?.x ?? 0,
-                opt.customA?.y ?? 0,
-                opt.customB?.x ?? 0,
-                opt.customB?.y ?? 0,
-            ],
+            custom: new Array<number>(opt.pts.length * 4),
         };
 
         for (let i = 0; i < opt.pts.length; i++) {
@@ -112,6 +97,13 @@ export function drawPolygon(opt: DrawPolygonOpt) {
             indices = [...Array(npts - 2).keys()]
                 .map((n) => [0, n + 1, n + 2])
                 .flat();
+        }
+
+        for (let i = 0; i < opt.pts.length; i++) {
+            attributes.custom[i * 4] = opt.customA?.x ?? 0;
+            attributes.custom[i * 4 + 1] = opt.customA?.y ?? 0;
+            attributes.custom[i * 4 + 2] = opt.customB?.x ?? 0;
+            attributes.custom[i * 4 + 3] = opt.customB?.y ?? 0;
         }
 
         drawRaw(
