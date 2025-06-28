@@ -103,11 +103,15 @@ export function drawPicture(
     ctx.pushArrayBuffer(picture.mesh!.glVBuf);
     // Once bound, we set the pointers, which are offsets relative to the pointer of the array buffer we just bound
     const a_pos = gl.getAttribLocation(_k.gfx.defShader.glProgram, "a_pos");
-    gl.vertexAttribPointer(a_pos, 2, gl.FLOAT, false, 32, 0);
+    gl.vertexAttribPointer(a_pos, 2, gl.FLOAT, false, 48, 0);
     const a_uv = gl.getAttribLocation(_k.gfx.defShader.glProgram, "a_uv");
-    gl.vertexAttribPointer(a_uv, 2, gl.FLOAT, false, 32, 8);
+    gl.vertexAttribPointer(a_uv, 2, gl.FLOAT, false, 48, 8);
     const a_color = gl.getAttribLocation(_k.gfx.defShader.glProgram, "a_color");
-    gl.vertexAttribPointer(a_color, 4, gl.FLOAT, false, 32, 16);
+    gl.vertexAttribPointer(a_color, 4, gl.FLOAT, false, 48, 16);
+
+    const a_custom = gl.getAttribLocation(_k.gfx.defShader.glProgram, "a_custom");
+    gl.vertexAttribPointer(a_custom, 4, gl.FLOAT, false, 48, 32);
+
     // Bind the index buffer as well
     ctx.pushElementArrayBuffer(picture.mesh!.glIBuf);
 
@@ -166,9 +170,10 @@ export function drawPicture(
     // But that seems not to be happening, so we do it explicitly here
     ctx.pushArrayBuffer(_k.gfx.renderer.glVBuf);
     // We set the pointers to this vertex buffer again
-    gl.vertexAttribPointer(a_pos, 2, gl.FLOAT, false, 32, 0);
-    gl.vertexAttribPointer(a_uv, 2, gl.FLOAT, false, 32, 8);
-    gl.vertexAttribPointer(a_color, 4, gl.FLOAT, false, 32, 16);
+    gl.vertexAttribPointer(a_pos, 2, gl.FLOAT, false, 48, 0);
+    gl.vertexAttribPointer(a_uv, 2, gl.FLOAT, false, 48, 8);
+    gl.vertexAttribPointer(a_color, 4, gl.FLOAT, false, 48, 16);
+    gl.vertexAttribPointer(a_custom, 4, gl.FLOAT, false, 48, 32);
     // And pop the buffer to balance
     ctx.popArrayBuffer();
 }
