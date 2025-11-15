@@ -21,6 +21,7 @@ type FontAtlas = {
     font: BitmapFontData;
     cursor: Vec2;
     maxHeight: number;
+    maxActualBoundingBoxAscent: number;
     outline: Outline | null;
 };
 
@@ -160,6 +161,7 @@ function getFontAtlasForFont(font: FontData | string): FontAtlas {
             },
             cursor: new Vec2(0),
             maxHeight: 0,
+            maxActualBoundingBoxAscent: 0,
             outline: opts.outline,
         };
 
@@ -201,9 +203,10 @@ function updateFontAtlas(font: FontData | string, ch: string) {
         c2d.fillStyle = "#ffffff";
 
         // TODO: Memoize?
-        const allCharsMeasured = c2d.measureText(allChars());
-        const maxActualBoundingBoxAscent = allCharsMeasured.actualBoundingBoxAscent;
-
+        if (atlas.maxActualBoundingBoxAscent === 0) {
+            atlas.maxActualBoundingBoxAscent = c2d.measureText(allChars()).actualBoundingBoxAscent;
+        }
+        const maxActualBoundingBoxAscent = atlas.maxActualBoundingBoxAscent;
         const m = c2d.measureText(ch);
         let w = Math.ceil(m.width);
         if (!w) return;
