@@ -354,7 +354,6 @@ export class BatchRenderer {
                         gl.ONE,
                         gl.ONE_MINUS_SRC_ALPHA,
                     );
-                    throw new Error("Additive blending");
                     break;
                 case BlendMode.Multiply:
                     gl.blendFuncSeparate(
@@ -363,7 +362,6 @@ export class BatchRenderer {
                         gl.ONE,
                         gl.ONE_MINUS_SRC_ALPHA,
                     );
-                    throw new Error("Multiply blending");
                     break;
                 case BlendMode.Screen:
                     gl.blendFuncSeparate(
@@ -372,7 +370,6 @@ export class BatchRenderer {
                         gl.ONE,
                         gl.ONE_MINUS_SRC_ALPHA,
                     );
-                    throw new Error("Screen blending");
                     break;
                 case BlendMode.Overlay:
                     gl.blendFuncSeparate(
@@ -381,7 +378,6 @@ export class BatchRenderer {
                         gl.ONE,
                         gl.ONE_MINUS_SRC_ALPHA,
                     );
-                    throw new Error("Overlay blending");
                     break;
             }
         }
