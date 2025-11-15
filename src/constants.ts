@@ -30,7 +30,7 @@ const MAX_BATCHED_QUAD = 2048;
 export const MAX_BATCHED_VERTS = MAX_BATCHED_QUAD * 4 * STRIDE;
 export const MAX_BATCHED_INDICES = MAX_BATCHED_QUAD * 6;
 // vertex shader template, replace {{user}} with user vertex shader code
-export const VERT_TEMPLATE = `
+export const VERT_TEMPLATE = /* glsl */`
 attribute vec2 a_pos;
 attribute vec2 a_uv;
 attribute vec4 a_color;
