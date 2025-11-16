@@ -227,8 +227,8 @@ function updateFontAtlas(font: FontData | string, ch: string) {
                 atlas.outline.width,
             );
 
-            w += atlas.outline.width * 0;
-            h += atlas.outline.width * 0;
+            w += atlas.outline.width * 2;
+            h += atlas.outline.width * 2;
         }
 
         c2d.fillStyle = "#ffffff";
