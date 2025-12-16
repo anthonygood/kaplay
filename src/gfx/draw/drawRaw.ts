@@ -41,6 +41,13 @@ export function drawRaw(
         vv[index++] = attributes.color[i * 3 + 1] / 255;
         vv[index++] = attributes.color[i * 3 + 2] / 255;
         vv[index++] = attributes.opacity[i];
+
+        // Something better than this...
+        // Push the custom attribute values
+        vv[index++] = attributes.custom?.[i * 4] ?? 0;
+        vv[index++] = attributes.custom?.[i * 4 + 1] ?? 0;
+        vv[index++] = attributes.custom?.[i * 4 + 2] ?? 0;
+        vv[index++] = attributes.custom?.[i * 4 + 3] ?? 0;
     }
 
     _k.gfx.renderer.push(

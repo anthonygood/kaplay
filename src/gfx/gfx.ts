@@ -376,6 +376,7 @@ export class BatchRenderer {
                         gl.ONE,
                         gl.ONE_MINUS_SRC_ALPHA,
                     );
+                    break;
             }
         }
     }

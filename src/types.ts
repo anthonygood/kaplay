@@ -4293,6 +4293,7 @@ export interface KAPLAYCtx<
     vec2(x: number, y: number): Vec2;
     vec2(p: Vec2): Vec2;
     vec2(xy: number): Vec2;
+    vec2(p: Vec2 | number): Vec2;
     vec2(): Vec2;
     /**
      * Create a color from RGB values (0 - 255).
@@ -6365,6 +6366,8 @@ export interface Vertex {
     uv: Vec2;
     color: Color;
     opacity: number;
+    customA?: Vec2;
+    customB?: Vec2;
 }
 
 export enum BlendMode {
@@ -6380,6 +6383,7 @@ export interface Attributes {
     uv: number[];
     color: number[];
     opacity: number[];
+    custom?: number[];
 }
 
 /**
@@ -6402,6 +6406,8 @@ export interface RenderProps {
     uniform?: Uniform | null;
     blend?: BlendMode;
     outline?: Outline;
+    customA?: Vec2;
+    customB?: Vec2;
 }
 
 export type DrawTextureOpt = RenderProps & {
@@ -6444,6 +6450,7 @@ export type DrawUVQuadOpt = RenderProps & {
      * The anchor point, or the pivot point. Default to "topleft".
      */
     anchor?: Anchor | Vec2;
+    custom?: [number, number, number, number];
 };
 
 /**

@@ -22,6 +22,7 @@ export type FontAtlas = {
     font: BitmapFontData;
     cursor: Vec2;
     maxHeight: number;
+    maxActualBoundingBoxAscent: number;
     outline: Outline | null;
 };
 
@@ -157,6 +158,7 @@ function getFontAtlasForFont(font: FontData | string): FontAtlas {
             },
             cursor: new Vec2(0),
             maxHeight: 0,
+            maxActualBoundingBoxAscent: 0,
             outline: opts.outline,
         };
 
@@ -164,6 +166,14 @@ function getFontAtlasForFont(font: FontData | string): FontAtlas {
     }
     return atlas;
 }
+
+const allChars = () => {
+    const renderableChars: string[] = [];
+    for (let i = 32; i <= 128; i++) { // Common Unicode range
+        renderableChars.push(String.fromCharCode(i));
+    }
+    return renderableChars.join("");
+};
 
 function updateFontAtlas(font: FontData | string, ch: string) {
     const atlas = getFontAtlasForFont(font);
@@ -188,10 +198,16 @@ function updateFontAtlas(font: FontData | string, ch: string) {
         c2d.textBaseline = "top";
         c2d.textAlign = "left";
         c2d.fillStyle = "#ffffff";
+
+        // TODO: Memoize?
+        if (atlas.maxActualBoundingBoxAscent === 0) {
+            atlas.maxActualBoundingBoxAscent = c2d.measureText(allChars()).actualBoundingBoxAscent;
+        }
+        const maxActualBoundingBoxAscent = atlas.maxActualBoundingBoxAscent;
         const m = c2d.measureText(ch);
         let w = Math.ceil(m.width);
         if (!w) return;
-        let h = Math.ceil(Math.abs(m.actualBoundingBoxAscent))
+        let h = maxActualBoundingBoxAscent + Math.ceil(Math.abs(m.actualBoundingBoxAscent))
             + Math.ceil(Math.abs(m.actualBoundingBoxDescent));
 
         // TODO: Test if this works with the verification of width and color
@@ -209,13 +225,15 @@ function updateFontAtlas(font: FontData | string, ch: string) {
             );
 
             w += atlas.outline.width * 2;
-            h += atlas.outline.width * 3;
+            h += atlas.outline.width * 2;
         }
+
+        c2d.fillStyle = "#ffffff";
 
         c2d.fillText(
             ch,
             atlas.outline?.width ?? 0,
-            atlas.outline?.width ?? 0,
+            (atlas.outline?.width ?? 0) + maxActualBoundingBoxAscent,
         );
 
         const img = c2d.getImageData(
@@ -244,7 +262,7 @@ function updateFontAtlas(font: FontData | string, ch: string) {
             atlas.cursor.x,
             atlas.cursor.y,
             w,
-            h,
+            h + maxActualBoundingBoxAscent,
         );
 
         atlas.cursor.x += w + 1;

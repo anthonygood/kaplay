@@ -47,7 +47,6 @@ export function drawUVQuad(opt: DrawUVQuadOpt) {
     multRotate(opt.angle);
     multScaleV(opt.scale);
     multTranslate(offsetX, offsetY);
-
     drawRaw(
         {
             pos: [
@@ -70,6 +69,7 @@ export function drawUVQuad(opt: DrawUVQuadOpt) {
                 opt.flipX ? qx : qx + qw,
                 opt.flipY ? qy : qy + qh,
             ],
+            // NB. Could do gradient colors here
             color: [
                 color.r,
                 color.g,
@@ -84,11 +84,34 @@ export function drawUVQuad(opt: DrawUVQuadOpt) {
                 color.g,
                 color.b,
             ],
+            // NB. Could do alpha gradient here
             opacity: [
                 opacity,
                 opacity,
                 opacity,
                 opacity,
+            ],
+            // custom: opt.custom ?? undefined,
+            custom: [
+                opt.customA?.x ?? 0,
+                opt.customA?.y ?? 0,
+                opt.customB?.x ?? 0,
+                opt.customB?.y ?? 0,
+
+                opt.customA?.x ?? 0,
+                opt.customA?.y ?? 0,
+                opt.customB?.x ?? 0,
+                opt.customB?.y ?? 0,
+
+                opt.customA?.x ?? 0,
+                opt.customA?.y ?? 0,
+                opt.customB?.x ?? 0,
+                opt.customB?.y ?? 0,
+
+                opt.customA?.x ?? 0,
+                opt.customA?.y ?? 0,
+                opt.customB?.x ?? 0,
+                opt.customB?.y ?? 0,
             ],
         },
         [0, 1, 3, 1, 2, 3],
