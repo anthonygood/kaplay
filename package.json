@@ -18,19 +18,22 @@
   "type": "module",
   "_main": "./dist/kaplay.cjs",
   "_module": "./dist/kaplay.mjs",
+  "_types": "./dist/doc.d.ts",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
-  "types": "./dist/doc.d.ts",
+  "types": "./src/doc.d.ts",
   "readme": "./README.md",
   "exports": {
     ".": {
       "import": {
         "types": "./dist/doc.d.ts",
-        "default": "./dist/kaplay.mjs"
+        "_default": "./dist/kaplay.mjs",
+        "default": "./src/kaplay.ts"
       },
       "require": {
         "types": "./dist/doc.d.ts",
-        "default": "./dist/kaplay.cjs"
+        "_default": "./dist/kaplay.cjs",
+        "default": "./src/index.ts"
       }
     },
     "./global": "./dist/declaration/global.js"
