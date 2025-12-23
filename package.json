@@ -16,19 +16,24 @@
     "url": "git+https://github.com/kaplayjs/kaplay.git"
   },
   "type": "module",
-  "main": "./dist/kaplay.cjs",
-  "module": "./dist/kaplay.mjs",
-  "types": "./dist/doc.d.ts",
+  "_main": "./dist/kaplay.cjs",
+  "_module": "./dist/kaplay.mjs",
+  "_types": "./dist/doc.d.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/doc.d.ts",
   "readme": "./README.md",
   "exports": {
     ".": {
       "import": {
         "types": "./dist/doc.d.ts",
-        "default": "./dist/kaplay.mjs"
+        "_default": "./dist/kaplay.mjs",
+        "default": "./src/kaplay.ts"
       },
       "require": {
         "types": "./dist/doc.d.ts",
-        "default": "./dist/kaplay.cjs"
+        "_default": "./dist/kaplay.cjs",
+        "default": "./src/index.ts"
       }
     },
     "./global": "./dist/declaration/global.js"
@@ -62,7 +67,8 @@
   "scripts": {
     "dev": "NODE_ENV=development node scripts/dev.js",
     "win:dev": "set NODE_ENV=development && node scripts/dev.js",
-    "build": "node scripts/generateIndex.js && npm run doc-dts && node scripts/build.js",
+    "build": "echo nobuild",
+    "_build": "node scripts/generateIndex.js && npm run doc-dts && node scripts/build.js",
     "build:fast": "node scripts/buildFast.js",
     "check": "tsc",
     "lint": "eslint .",

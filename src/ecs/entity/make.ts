@@ -93,7 +93,7 @@ export function makeInternal<T extends CompList<unknown>>(
 export function make<T extends CompList<unknown>>(
     compsAndTags: [...T],
 ): GameObj<T[number]> {
-    const obj = makeInternal(_k.game.gameObjLastId, compsAndTags);
+    const obj = makeInternal(_k.game.gameObjLastId, compsAndTags.filter(Boolean));
     _k.game.gameObjLastId++;
     return obj;
 }
