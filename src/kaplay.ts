@@ -83,6 +83,7 @@ export const kaplay = <
 >(
     opt?: O,
 ): KAPLAYGame<O> => {
+    console.log('🤡🤡🤡🤡🤡 kaplay')
     if (runned) {
         console.warn(
             "KAPLAY was runned before, cleaning state",

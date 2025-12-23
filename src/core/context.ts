@@ -299,7 +299,7 @@ export const createContext = (
     const ctx: KAPLAYCtx = {
         _k: e,
         // @ts-ignore
-        VERSION: KAPLAY_VERSION,
+        VERSION: '4000.0.0-alpha.18-ultimate-mega', // should be injected by build script
         // asset load
         loadRoot,
         loadProgress,

@@ -659,6 +659,8 @@ export interface Vertex {
     uv: Vec2;
     color: Color;
     opacity: number;
+    customA?: Vec2;
+    customB?: Vec2;
 }
 
 /**
@@ -682,6 +684,7 @@ export interface Attributes {
     uv: number[];
     color: number[];
     opacity: number[];
+    custom?: number[];
 }
 
 /**
@@ -705,6 +708,8 @@ export interface RenderProps {
     uniform?: Uniform | null;
     blend?: BlendMode;
     outline?: Outline;
+    customA?: Vec2;
+    customB?: Vec2;
 }
 
 export interface Outline {

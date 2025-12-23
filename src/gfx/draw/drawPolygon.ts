@@ -101,6 +101,7 @@ export function drawPolygon(opt: DrawPolygonOpt) {
             uv: new Array<number>(opt.pts.length * 2),
             color: new Array<number>(opt.pts.length * 3),
             opacity: new Array<number>(opt.pts.length),
+            custom: new Array<number>(opt.pts.length * 4),
         };
 
         for (let i = 0; i < opt.pts.length; i++) {
@@ -151,6 +152,8 @@ export function drawPolygon(opt: DrawPolygonOpt) {
                 ? (opt.colors[i] ? opt.colors[i].mult(color) : color)
                 : color,
             opacity: opt.opacity ?? 1,
+            customA: opt.customA,
+            customB: opt.customB,
         }));*/
 
         let indices;
@@ -165,6 +168,13 @@ export function drawPolygon(opt: DrawPolygonOpt) {
             indices = [...Array(npts - 2).keys()]
                 .map((n) => [0, n + 1, n + 2])
                 .flat();
+        }
+
+        for (let i = 0; i < opt.pts.length; i++) {
+            attributes.custom[i * 4] = opt.customA?.x ?? 0;
+            attributes.custom[i * 4 + 1] = opt.customA?.y ?? 0;
+            attributes.custom[i * 4 + 2] = opt.customB?.x ?? 0;
+            attributes.custom[i * 4 + 3] = opt.customB?.y ?? 0;
         }
 
         drawRaw(

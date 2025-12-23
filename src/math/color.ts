@@ -185,7 +185,14 @@ export class Color {
         return new Color(255 - this.r, 255 - this.g, 255 - this.b);
     }
 
-    mult(other: Color): Color {
+    mult(other: Color | number): Color {
+        if (typeof other === "number") {
+            return new Color(
+                clamp(this.r * other, 0, 255),
+                clamp(this.g * other, 0, 255),
+                clamp(this.b * other, 0, 255),
+            );
+        }
         return new Color(
             this.r * other.r / 255,
             this.g * other.g / 255,
