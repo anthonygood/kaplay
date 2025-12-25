@@ -240,8 +240,10 @@ function updateFontAtlas(font: FontData | string, ch: string) {
             );
 
             w += atlas.outline.width * 2;
-            h += atlas.outline.width * 3;
+            h += atlas.outline.width * 2;
         }
+
+        c2d.fillStyle = "#ffffff";
 
         c2d.fillText(
             ch,
