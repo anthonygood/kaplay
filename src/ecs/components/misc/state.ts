@@ -118,6 +118,10 @@ export function state<T extends string>(
                     : transitions[oldState] as string[];
 
                 if (!available.includes(state)) {
+                    console.debug(`Cannot transition state from "${oldState}" to "${state}". Available transitions: ${
+                        available.map((s) => `"${s}"`).join(", ")
+                    }`)
+                    return;
                     throw new Error(
                         `Cannot transition state from "${oldState}" to "${state}". Available transitions: ${
                             available.map((s) => `"${s}"`).join(", ")
