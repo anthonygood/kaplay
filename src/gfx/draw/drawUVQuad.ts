@@ -22,7 +22,8 @@ import { drawRaw } from "./drawRaw";
  * @group Draw
  * @subgroup Types
  */
-export type DrawUVQuadOpt = RenderProps & {
+export type DrawUVQuadOpt = Omit<RenderProps, 'opacity'> & {
+    opacity?: number | number[];
     /**
      * Width of the UV quad.
      */
@@ -71,7 +72,13 @@ export function drawUVQuad(opt: DrawUVQuadOpt) {
     const offsetY = anchor.y * h * -0.5;
     const q = opt.quad || new Quad(0, 0, 1, 1);
     const color = opt.color || Color.WHITE;
-    const opacity = opt.opacity ?? 1;
+    const opacityArg = opt.opacity ?? 1;
+    const opacity = typeof opacityArg === 'number' ? [
+        opacityArg,
+        opacityArg,
+        opacityArg,
+        opacityArg,
+    ] : opacityArg
 
     pushTransform();
     multTranslateV(opt.pos);
@@ -117,12 +124,7 @@ export function drawUVQuad(opt: DrawUVQuadOpt) {
                 color.b,
             ],
             // NB. Could do alpha gradient here
-            opacity: [
-                opacity,
-                opacity,
-                opacity,
-                opacity,
-            ],
+            opacity,
             // custom: opt.custom ?? undefined,
             custom: [
                 opt.customA?.x ?? 0,

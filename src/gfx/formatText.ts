@@ -181,7 +181,7 @@ function getFontAtlasForFont(font: FontData | string): FontAtlas {
 }
 
 const allChars = () => {
-    const renderableChars: string[] = [];
+    const renderableChars: string[] = ["❤️"];
     for (let i = 32; i <= 128; i++) { // Common Unicode range
         renderableChars.push(String.fromCharCode(i));
     }
