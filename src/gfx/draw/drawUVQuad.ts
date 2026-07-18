@@ -22,8 +22,9 @@ import { drawRaw } from "./drawRaw";
  * @group Draw
  * @subgroup Types
  */
-export type DrawUVQuadOpt = Omit<RenderProps, 'opacity'> & {
+export type DrawUVQuadOpt = Omit<RenderProps, 'opacity' | 'color'> & {
     opacity?: number | number[];
+    color?: Color | [Color, Color, Color, Color];
     /**
      * Width of the UV quad.
      */
@@ -78,7 +79,7 @@ export function drawUVQuad(opt: DrawUVQuadOpt) {
         opacityArg,
         opacityArg,
         opacityArg,
-    ] : opacityArg
+    ] : opacityArg;
 
     pushTransform();
     multTranslateV(opt.pos);
@@ -109,16 +110,35 @@ export function drawUVQuad(opt: DrawUVQuadOpt) {
                 opt.flipY ? q.y : q.y + q.h,
             ],
             // NB. Could do gradient colors here
-            color: [
+            color: Array.isArray(color) ? [
+                color[0].r,
+                color[0].g,
+                color[0].b,
+
+                color[1].r,
+                color[1].g,
+                color[1].b,
+
+                color[2].r,
+                color[2].g,
+                color[2].b,
+
+                color[3].r,
+                color[3].g,
+                color[3].b,
+            ] : [
                 color.r,
                 color.g,
                 color.b,
+
                 color.r,
                 color.g,
                 color.b,
+
                 color.r,
                 color.g,
                 color.b,
+
                 color.r,
                 color.g,
                 color.b,
