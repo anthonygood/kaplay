@@ -1355,7 +1355,7 @@ export const GameObjRawPrototype: Omit<
             }
             else {
                 // @ts-ignore
-                if (this[key] === undefined) {
+                if (this[key] === undefined || comp.overwrites) {
                     // Assign comp fields to game obj
                     Object.defineProperty(this, key, {
                         get: () => comp[<keyof typeof comp> key],
