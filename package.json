@@ -27,13 +27,13 @@
     ".": {
       "import": {
         "types": "./dist/doc.d.ts",
-        "_default": "./dist/kaplay.mjs",
-        "default": "./src/kaplay.ts"
+        "default": "./dist/kaplay.mjs",
+        "__default": "./src/kaplay.ts"
       },
       "require": {
         "types": "./dist/doc.d.ts",
-        "_default": "./dist/kaplay.cjs",
-        "default": "./src/index.ts"
+        "default": "./dist/kaplay.cjs",
+        "__default": "./src/index.ts"
       }
     },
     "./global": "./dist/declaration/global.js"
