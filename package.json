@@ -67,8 +67,8 @@
   "scripts": {
     "dev": "NODE_ENV=development node scripts/dev.js",
     "win:dev": "set NODE_ENV=development && node scripts/dev.js",
-    "build": "echo nobuild",
-    "_build": "node scripts/generateIndex.js && npm run doc-dts && node scripts/build.js",
+    "_build": "echo nobuild",
+    "build": "node scripts/generateIndex.js && npm run doc-dts && node scripts/build.js",
     "build:fast": "node scripts/buildFast.js",
     "check": "tsc",
     "lint": "eslint .",
