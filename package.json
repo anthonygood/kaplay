@@ -16,12 +16,12 @@
     "url": "git+https://github.com/kaplayjs/kaplay.git"
   },
   "type": "module",
-  "_main": "./dist/kaplay.cjs",
-  "_module": "./dist/kaplay.mjs",
-  "_types": "./dist/doc.d.ts",
-  "main": "./src/index.ts",
-  "module": "./src/index.ts",
-  "types": "./src/doc.d.ts",
+  "main": "./dist/kaplay.cjs",
+  "module": "./dist/kaplay.mjs",
+  "types": "./dist/doc.d.ts",
+  "__main": "./src/index.ts",
+  "__module": "./src/index.ts",
+  "__types": "./src/doc.d.ts",
   "readme": "./README.md",
   "exports": {
     ".": {
