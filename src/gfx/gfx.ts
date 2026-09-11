@@ -282,10 +282,26 @@ export class BatchRenderer {
 
         // Bind vertex data
         this.ctx.pushArrayBuffer(this.glVBuf);
+
+        // Buffer orphaning: each upload replaces the whole batch. Orphan the storage first so
+        // pending draws can finish using the previous allocation without stalls.
+        // See: https://wikis.khronos.org/opengl/Buffer_Object_Streaming
+        gl.bufferData(
+            gl.ARRAY_BUFFER,
+            this.vqueue.length * Float32Array.BYTES_PER_ELEMENT,
+            gl.DYNAMIC_DRAW,
+        );
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(this.vqueue));
 
         // Bind index data
         this.ctx.pushElementArrayBuffer(this.glIBuf);
+
+        // Buffer orphaning as above
+        gl.bufferData(
+            gl.ELEMENT_ARRAY_BUFFER,
+            this.iqueue.length * Uint16Array.BYTES_PER_ELEMENT,
+            gl.DYNAMIC_DRAW,
+        );
         gl.bufferSubData(
             gl.ELEMENT_ARRAY_BUFFER,
             0,
