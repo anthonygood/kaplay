@@ -80,7 +80,9 @@ vec4 def_vert() {
 
 void main() {
 	vec4 pos = vert(a_pos, a_uv, a_color);
-	v_pos = a_pos;
+	// World position: batched draws are pre-transformed (transform is identity), while
+	// drawPicture() stores local vertices and applies the object's transform here.
+	v_pos = (transform * vec4(a_pos, 0.0, 1.0)).xy;
 	v_uv = a_uv;
 	v_color = a_color;
 	v_custom = a_custom;
