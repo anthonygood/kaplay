@@ -613,7 +613,8 @@ export interface LoadFontOpt {
     filter?: TexFilter;
     outline?: number | Outline;
     /**
-     * The size to load the font in (default 64).
+     * The size used to rasterize glyphs into the font atlas (default 64).
+     * Text drawn at other sizes is scaled from this atlas.
      *
      * @since v3001.0
      */

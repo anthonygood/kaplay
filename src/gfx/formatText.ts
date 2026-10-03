@@ -139,7 +139,11 @@ function getFontName(font: FontData | string): string {
 
 function getFontAtlasForFont(font: FontData | string): FontAtlas {
     const fontName = getFontName(font);
-    let atlas = _k.gfx.fontAtlases[fontName];
+    const fontSize = font instanceof FontData
+        ? font.size
+        : DEF_TEXT_CACHE_SIZE;
+    const atlasKey = JSON.stringify([fontName, fontSize]);
+    let atlas = _k.gfx.fontAtlases[atlasKey];
     if (!atlas) {
         // create a new atlas
         const opts: {
@@ -167,7 +171,7 @@ function getFontAtlasForFont(font: FontData | string): FontAtlas {
                     },
                 ),
                 map: {},
-                size: DEF_TEXT_CACHE_SIZE,
+                size: fontSize,
             },
             cursor: new Vec2(0),
             maxHeight: 0,
@@ -175,7 +179,7 @@ function getFontAtlasForFont(font: FontData | string): FontAtlas {
             outline: opts.outline,
         };
 
-        _k.gfx.fontAtlases[fontName] = atlas;
+        _k.gfx.fontAtlases[atlasKey] = atlas;
     }
     return atlas;
 }
